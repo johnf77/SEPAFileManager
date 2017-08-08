@@ -85,6 +85,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Checker.cs" />
     <Compile Include="Cryption.cs" />
     <Compile Include="FileManagerService.cs" />
     <Compile Include="FileProcessing.cs" />

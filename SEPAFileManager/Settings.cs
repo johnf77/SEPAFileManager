@@ -16,8 +16,11 @@ namespace SEPAFileManager
         public static string BIC = ConfigurationManager.AppSettings["BIC"].ToString();
         public static string CreateFilesCutoff = ConfigurationManager.AppSettings["CreateFilesCutoff"].ToString().ToUpper();
         public static string MiddayCutoff = ConfigurationManager.AppSettings["MiddayCutoff"].ToString().ToUpper();
+        public static string CheckerTime = ConfigurationManager.AppSettings["CheckerTime"].ToString().ToUpper();
         public static int UploadInterval = Int32.Parse(ConfigurationManager.AppSettings["UploadInterval"]) * 1000 * 60;
         public static int DownloadInterval = Int32.Parse(ConfigurationManager.AppSettings["DownloadInterval"]) * 1000 * 60;
+        public static readonly bool GenerateDDs = (ConfigurationManager.AppSettings["GenerateDDs"].ToString().ToUpper() == "TRUE");
+        public static readonly bool CreateDDFile = (ConfigurationManager.AppSettings["CreateDDFile"].ToString().ToUpper() == "TRUE");
 
         public static Abacus.BusinessRules.PaymentPeriods PayPeriods;
         public static Abacus.BusinessRules.AbacusUser User;
