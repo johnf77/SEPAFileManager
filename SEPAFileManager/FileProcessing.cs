@@ -365,13 +365,14 @@ namespace SEPAFileManager
                 CreditFiles CT = new CreditFiles(Settings.Connection.ConnectionString, CreditFiles.Providers.CUSOP, Settings.BIC, true);
                 DsSCT ds = new Abacus.SEPA.DataSets.DsSCT();
 
+                DateTime dtFrom = DateTime.Today;
+
+                if (dtFrom.DayOfWeek != DayOfWeek.Saturday)//needed to return any CTs created with saturday settle date (temp fix)
+                    dtFrom = CreditFiles.GetSettlementDate(dtFrom, SEPA.ClosedDays());
+
                 CT.SEPA_CT_SendFetch(CreditFiles.CT_Status.AnyOutStatus,
-                    CreditFiles.GetSettlementDate(DateTime.Today, SEPA.ClosedDays()),
-                    CreditFiles.GetSettlementDate(DateTime.Today.AddDays(1), SEPA.ClosedDays()), ds);
+                    dtFrom, CreditFiles.GetSettlementDate(dtFrom.AddDays(1), SEPA.ClosedDays()), ds);
 
-                DateTime tm = CreditFiles.GetSettlementDateByTime(DateTime.Now, Settings.MiddayCutoff, SEPA.ClosedDays());
-
-                //additional check to prevent blank files
                 if (ds.SEPA_CT_File.Rows.Count > 0)
                 {
                     CreditFiles.ICFReturn ReturnInfo = CT.CreateICF(ds, (CreditFiles.CT_Status)3, OutputFolder, Settings.PayPeriods, Settings.User, Settings.Terminal,
