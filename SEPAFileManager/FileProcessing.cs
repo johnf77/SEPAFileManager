@@ -15,6 +15,7 @@ namespace SEPAFileManager
     {
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private static readonly ILog email = LogManager.GetLogger("EmailAlerter");
+        DsSDD dsSDD1 = new DsSDD();
         //Generate Read & Post
         #region Process Downloaded files
         public void ReadFiles()
@@ -237,7 +238,22 @@ namespace SEPAFileManager
                 log.Error(string.Concat(DateTime.Now + ", READFILE ERROR - File Processing Failed, ", ex.Message));
                 throw;
             }
-        }        
+        }
+
+        internal void postDVF(long FileID)
+        {
+            try
+            {
+                SDD_Validation Validation = new SDD_Validation(Settings.Connection.ConnectionString);
+                Validation.DVF_Accepted(FileID, CreditFiles.Providers.CUSOP, Settings.BIC, true);
+
+                log.Info(string.Concat(DateTime.Now, ", POST DVF - File Processing Completed for ", FileID));
+            }
+            catch (Exception Ex)
+            {
+                log.Error(string.Concat(DateTime.Now, ", POST ERROR - DVF File Processing Failed for ", FileID, " ", Ex.Message));
+            }
+        }
 
         public void ReadACK()
         {
@@ -355,7 +371,7 @@ namespace SEPAFileManager
         #endregion
 
         #region Generate files
-        internal string CreateFile()
+        internal string CT_CreateFile()
         {
             string FileName = string.Empty;
             try
@@ -389,6 +405,81 @@ namespace SEPAFileManager
             {
                 log.Error(string.Concat(DateTime.Now, ", CreateFile error - ", ex.ToString()));
                 throw ex;
+            }
+        }
+
+        internal void DD_Gen()
+        {
+            string OutputFolder = Settings.UploadFolder;
+
+            DebitFiles DD = new DebitFiles(Settings.Connection.ConnectionString, Settings.BIC, true);
+            DateTime FromDate = Abacus.SEPA.CreditFiles.GetSettlementDateByDays(DateTime.Now, Abacus.BusinessRules.CU.SEPA.SEPA.ClosedDays(), 5, -1);
+            DateTime ToDate = DateTime.Now;
+            DsSEPA_DD_RCUR ds = new DsSEPA_DD_RCUR();
+            //Fetch
+            DD.FetchSDDFromMandates(CreditFiles.GetSettlementDateByDays(ToDate, SEPA.ClosedDays(), 6, 1), ds);
+            CUSession Session = new CUSession(DateTime.Now);
+            log.Info(String.Concat(DateTime.Now, ", ", " DDs fetched"));
+            //Generate
+            List<MandateError> MDErrors = new List<MandateError>();
+            GenerateMandateProcess GM = new GenerateMandateProcess(FromDate, ToDate, ds, dsSDD1, SEPA.ClosedDays(),
+                Settings.PayPeriods, Session, Settings.BIC, Settings.NSC, Settings.CreditorIdentifier, Settings.HomeCurrency.CurrencyID, MDErrors);
+            GM.Generate();
+            log.Info(String.Concat(DateTime.Now, ", ", this.dsSDD1.SEPA_DD.Rows.Count, " DDs generated"));
+            //if any errors - log
+
+            string errors = string.Empty;
+            foreach (MandateError MDE in MDErrors)
+            {
+                errors = string.Concat(errors, MDE.MndtId, " - ", MDE.Error, Environment.NewLine);
+            }
+            if (MDErrors.Count > 0)
+                log.Error(String.Concat(DateTime.Now, Environment.NewLine, errors));
+
+            //Save
+            foreach (DsSDD.SEPA_DDRow row in dsSDD1.SEPA_DD)
+            {
+                if (row.ModSttlmDt.Date.CompareTo(new DateTime(1900, 1, 1)) > 0)
+                {
+                    row.IntrBkSttlmDt = row.ModSttlmDt;
+                }
+            }
+
+            DD.UpdateSDD(dsSDD1);
+
+            log.Info(String.Concat(DateTime.Now, ", ", dsSDD1.SEPA_DD.Rows.Count, " DDs saved"));
+        }
+
+        internal void DD_CreateFile()
+        {
+            try
+            {
+                string OutputFolder = Settings.UploadFolder;
+
+                DebitFiles DD = new DebitFiles(Settings.Connection.ConnectionString, Settings.BIC, true);
+                DateTime FromDate = DebitFiles.GetSettlementDateByTime(DateTime.Now, Settings.DDCreateFilesCutoff, SEPA.ClosedDays());
+                DateTime ToDate = CreditFiles.GetSettlementDateByDays(DateTime.Now, SEPA.ClosedDays(), 6, 1);
+
+                DD.SEPA_DD_SendFetch(DebitFiles.DD_Status.AnyOutStatus, FromDate, ToDate, dsSDD1);
+
+                //additional check to prevent blank files
+                if (dsSDD1.SEPA_DD_File.Count > 0)
+                {
+                    DebitFiles.IDFReturn Return = DD.CreateIDF(dsSDD1, DebitFiles.DD_Status.AnyOutStatus, Settings.UploadFolder,
+                        Settings.PayPeriods, Settings.User, Settings.Terminal, DateTime.Now, Settings.SettlementAccID, Settings.DDCreateFilesCutoff,
+                        SEPA.ClosedDays());
+
+                    log.Info(String.Concat(DateTime.Now, ", IDF Created - FileName: ", Return.FileName));
+                }
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message == "Nothing to output")
+                    log.Info(String.Concat(DateTime.Now, ", IDF - Nothing to output"));
+                else
+                    log.Error(String.Concat(DateTime.Now, ", IDF - File Creation failed, ", ex.Message));
+
+                throw;
             }
         }
         #endregion

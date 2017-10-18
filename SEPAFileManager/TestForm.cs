@@ -97,7 +97,7 @@ namespace SEPAFileManager
         {
             FileProcessing fp = new FileProcessing();
             FileManagerService.SetNextFileCreateTime();
-            this.txtOut.AppendText(string.Concat("File Created: ", fp.CreateFile()));
+            this.txtOut.AppendText(string.Concat("File Created: ", fp.CT_CreateFile()));
         }
 
         private void btnOnStart_Click(object sender, EventArgs e)
@@ -110,6 +110,24 @@ namespace SEPAFileManager
         {
             FileProcessing fp = new FileProcessing();
             fp.PostCVF(3352);
+        }
+
+        private void btnDDGen_Click(object sender, EventArgs e)
+        {
+            FileProcessing fp = new FileProcessing();
+            fp.DD_Gen();
+        }
+
+        private void btnCreateDDFile_Click(object sender, EventArgs e)
+        {
+            FileProcessing fp = new FileProcessing();
+            fp.DD_CreateFile();
+        }
+
+        private void btnPostDVF_Click(object sender, EventArgs e)
+        {
+            FileProcessing fp = new FileProcessing();
+            fp.postDVF(3856);
         }
     }
 }

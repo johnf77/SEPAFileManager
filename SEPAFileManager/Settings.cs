@@ -14,17 +14,20 @@ namespace SEPAFileManager
         public static string UploadFolder = ConfigurationManager.AppSettings["UploadFolder"].ToString();
         public static string NSC = ConfigurationManager.AppSettings["NSC"].ToString();
         public static string BIC = ConfigurationManager.AppSettings["BIC"].ToString();
+        public static string CreditorIdentifier = ConfigurationManager.AppSettings["CreditorIdentifier"].ToString();
         public static string CreateFilesCutoff = ConfigurationManager.AppSettings["CreateFilesCutoff"].ToString().ToUpper();
         public static string MiddayCutoff = ConfigurationManager.AppSettings["MiddayCutoff"].ToString().ToUpper();
         public static string CheckerTime = ConfigurationManager.AppSettings["CheckerTime"].ToString().ToUpper();
         public static int UploadInterval = Int32.Parse(ConfigurationManager.AppSettings["UploadInterval"]) * 1000 * 60;
         public static int DownloadInterval = Int32.Parse(ConfigurationManager.AppSettings["DownloadInterval"]) * 1000 * 60;
-        public static readonly bool GenerateDDs = (ConfigurationManager.AppSettings["GenerateDDs"].ToString().ToUpper() == "TRUE");
-        public static readonly bool CreateDDFile = (ConfigurationManager.AppSettings["CreateDDFile"].ToString().ToUpper() == "TRUE");
+        public static bool GenerateDDs = (ConfigurationManager.AppSettings["GenerateDDs"].ToString().ToUpper() == "TRUE");
+        public static bool CreateDDFile = (ConfigurationManager.AppSettings["CreateDDFile"].ToString().ToUpper() == "TRUE");
+        public static string DDCreateFilesCutoff = ConfigurationManager.AppSettings["DDCreateFilesCutoff"].ToString().ToUpper();
 
         public static Abacus.BusinessRules.PaymentPeriods PayPeriods;
         public static Abacus.BusinessRules.AbacusUser User;
         public static Abacus.BusinessRules.Terminal Terminal;
+        public static Abacus.BusinessRules.GL.Currency HomeCurrency;
 
         public static int SettlementAccID;
 
@@ -57,7 +60,8 @@ namespace SEPAFileManager
             Settings.PayPeriods = new Abacus.BusinessRules.PaymentPeriods();
             Settings.User = new Abacus.BusinessRules.AbacusUser(Settings.Connection.Login, Cryption.Decrypt(Settings.Connection.Password), Settings.Connection.ConnectionString);
             Settings.Terminal = Abacus.BusinessRules.Terminal.Find(Settings.GetMACAddress(), "");
-       }
+            Settings.HomeCurrency = new Abacus.BusinessRules.GL.Currency(true);
+        }
 
         private static string GetMACAddress()
         {

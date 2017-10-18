@@ -40,6 +40,9 @@
             this.btnCreateFile = new System.Windows.Forms.Button();
             this.btnPostCVF = new System.Windows.Forms.Button();
             this.btnOnStart = new System.Windows.Forms.Button();
+            this.btnDDGen = new System.Windows.Forms.Button();
+            this.btnCreateDDFile = new System.Windows.Forms.Button();
+            this.btnPostDVF = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnDownload
@@ -135,7 +138,7 @@
             this.btnCreateFile.Name = "btnCreateFile";
             this.btnCreateFile.Size = new System.Drawing.Size(96, 23);
             this.btnCreateFile.TabIndex = 38;
-            this.btnCreateFile.Text = "Create File";
+            this.btnCreateFile.Text = "Create CT File";
             this.btnCreateFile.UseVisualStyleBackColor = true;
             this.btnCreateFile.Click += new System.EventHandler(this.btnCreateFile_Click);
             // 
@@ -159,11 +162,44 @@
             this.btnOnStart.UseVisualStyleBackColor = true;
             this.btnOnStart.Click += new System.EventHandler(this.btnOnStart_Click);
             // 
+            // btnDDGen
+            // 
+            this.btnDDGen.Location = new System.Drawing.Point(279, 75);
+            this.btnDDGen.Name = "btnDDGen";
+            this.btnDDGen.Size = new System.Drawing.Size(96, 23);
+            this.btnDDGen.TabIndex = 41;
+            this.btnDDGen.Text = "DD Gen";
+            this.btnDDGen.UseVisualStyleBackColor = true;
+            this.btnDDGen.Click += new System.EventHandler(this.btnDDGen_Click);
+            // 
+            // btnCreateDDFile
+            // 
+            this.btnCreateDDFile.Location = new System.Drawing.Point(279, 104);
+            this.btnCreateDDFile.Name = "btnCreateDDFile";
+            this.btnCreateDDFile.Size = new System.Drawing.Size(96, 23);
+            this.btnCreateDDFile.TabIndex = 42;
+            this.btnCreateDDFile.Text = "Create DD File";
+            this.btnCreateDDFile.UseVisualStyleBackColor = true;
+            this.btnCreateDDFile.Click += new System.EventHandler(this.btnCreateDDFile_Click);
+            // 
+            // btnPostDVF
+            // 
+            this.btnPostDVF.Location = new System.Drawing.Point(394, 75);
+            this.btnPostDVF.Name = "btnPostDVF";
+            this.btnPostDVF.Size = new System.Drawing.Size(96, 23);
+            this.btnPostDVF.TabIndex = 43;
+            this.btnPostDVF.Text = "Post DVF";
+            this.btnPostDVF.UseVisualStyleBackColor = true;
+            this.btnPostDVF.Click += new System.EventHandler(this.btnPostDVF_Click);
+            // 
             // TestForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(624, 423);
+            this.Controls.Add(this.btnPostDVF);
+            this.Controls.Add(this.btnCreateDDFile);
+            this.Controls.Add(this.btnDDGen);
             this.Controls.Add(this.btnOnStart);
             this.Controls.Add(this.btnPostCVF);
             this.Controls.Add(this.btnCreateFile);
@@ -197,5 +233,8 @@
         private System.Windows.Forms.Button btnCreateFile;
         private System.Windows.Forms.Button btnPostCVF;
         private System.Windows.Forms.Button btnOnStart;
+        private System.Windows.Forms.Button btnDDGen;
+        private System.Windows.Forms.Button btnCreateDDFile;
+        private System.Windows.Forms.Button btnPostDVF;
     }
 }

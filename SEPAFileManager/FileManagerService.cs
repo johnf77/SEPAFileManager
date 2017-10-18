@@ -8,6 +8,7 @@ namespace SEPAFileManager
     {
         internal static readonly log4net.ILog Logger = log4net.LogManager.GetLogger("SEPAFileManager");
         private Timer timerCreateFile = new Timer();
+        private Timer timerCreateDDFile = new Timer();
         private Timer timerUpload = new Timer();
         private Timer timerDownload = new Timer();
         private Timer timerReadFiles = new Timer();
@@ -16,6 +17,7 @@ namespace SEPAFileManager
         private Timer timerCTUnsentChecker = new Timer();
         private Timer timerVFChecker = new Timer();
         public static DateTime NextFileCreate;
+        public static DateTime NextDDFileCreate;
         private DateTime CheckerRunTime;
 
         public FileManagerService()
@@ -35,6 +37,7 @@ namespace SEPAFileManager
             Logger.Info(string.Concat("Service Version  - Ack & CT Checks", AppVersionNumber));
 
             timerCreateFile.Elapsed += new ElapsedEventHandler(timerCreateFile_Elapsed);
+            timerCreateDDFile.Elapsed += new ElapsedEventHandler(timerCreateDDFile_Elapsed);
             timerUpload.Interval = Settings.UploadInterval;
             timerUpload.Elapsed += new ElapsedEventHandler(timerUpload_Elapsed);
             timerUpload.Start();
@@ -54,6 +57,18 @@ namespace SEPAFileManager
 
             Logger.Info(String.Concat(DateTime.Now, ", 1st File Creation at: ", NextFileCreate.ToShortDateString(), ":", NextFileCreate.ToShortTimeString()));
             SetTimer(timerCreateFile, NextFileCreate);
+
+            if (Settings.GenerateDDs)
+            {
+                string[] DDTime = Settings.DDCreateFilesCutoff.Split(':');
+                NextDDFileCreate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, Convert.ToInt32(DDTime[0]), Convert.ToInt32(DDTime[1]), 0);
+
+                if (NextDDFileCreate.CompareTo(DateTime.Now) < 0)
+                    NextDDFileCreate = NextDDFileCreate.AddDays(1);
+
+                Logger.Info(String.Concat(DateTime.Now, ", 1st DD File Creation at: ", NextDDFileCreate.ToShortDateString(), ":", NextDDFileCreate.ToShortTimeString()));
+                SetTimer(timerCreateDDFile, NextDDFileCreate);
+            }
 
             string[] Time = Settings.CheckerTime.Split(':');
             CheckerRunTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, Convert.ToInt32(Time[0]), Convert.ToInt32(Time[1]), 0);
@@ -264,7 +279,7 @@ namespace SEPAFileManager
                 _creatingfile = true;
 
                 FileProcessing fp = new FileProcessing();
-                fp.CreateFile();
+                fp.CT_CreateFile();
                 _creatingfile = false;
             }
             catch (Exception ex)
@@ -278,6 +293,38 @@ namespace SEPAFileManager
                 SetNextFileCreateTime();
                 Logger.Info(String.Concat(DateTime.Now, ", Next File Creation at: ", NextFileCreate.ToShortDateString(), ":", NextFileCreate.ToShortTimeString()));
                 SetTimer(timerCreateFile, NextFileCreate);
+            }
+        }
+
+        private void timerCreateDDFile_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            try
+            {
+                if (_stopping) return;
+
+                if (_creatingfile) return;
+                _creatingfile = true;
+
+                FileProcessing fp = new FileProcessing();
+
+                if (Settings.GenerateDDs)
+                    fp.DD_Gen();
+
+                if (Settings.CreateDDFile)
+                    fp.DD_CreateFile();
+
+                _creatingfile = false;
+            }
+            catch (Exception ex)
+            {
+                _creatingfile = false;
+                Logger.Error(String.Concat(DateTime.Now, ", CreateDDFile failed, ", ex.Message));
+            }
+            finally
+            {
+                NextDDFileCreate = NextDDFileCreate.AddDays(1);
+                Logger.Info(String.Concat(DateTime.Now, ", Next DD File Creation at: ", NextDDFileCreate.ToShortDateString(), ":", NextDDFileCreate.ToShortTimeString()));
+                SetTimer(timerCreateDDFile, NextDDFileCreate);
             }
         }
         #endregion timer events        
