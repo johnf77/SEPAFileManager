@@ -8,8 +8,6 @@ namespace SEPAFileManager
 {
     internal class Settings
     {
-        internal static readonly log4net.ILog log = log4net.LogManager.GetLogger("CusopFileManager");
-
         public static string DownloadFolder = ConfigurationManager.AppSettings["DownloadFolder"].ToString();
         public static string UploadFolder = ConfigurationManager.AppSettings["UploadFolder"].ToString();
         public static string NSC = ConfigurationManager.AppSettings["NSC"].ToString();

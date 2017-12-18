@@ -36,19 +36,24 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Abacus.BusinessRules">
+    <Reference Include="Abacus.BusinessRules, Version=1.8.2030.21506, Culture=neutral, PublicKeyToken=945f58626500c6b3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>DLLs\Abacus.BusinessRules.dll</HintPath>
     </Reference>
-    <Reference Include="Abacus.BusinessRules.DAL">
+    <Reference Include="Abacus.BusinessRules.DAL, Version=1.8.2030.21506, Culture=neutral, PublicKeyToken=c56192163146e850, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>DLLs\Abacus.BusinessRules.DAL.dll</HintPath>
     </Reference>
-    <Reference Include="Abacus.DataSets">
+    <Reference Include="Abacus.DataSets, Version=1.8.2030.21504, Culture=neutral, PublicKeyToken=b5c51ec05f8981ed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>DLLs\Abacus.DataSets.dll</HintPath>
     </Reference>
-    <Reference Include="Abacus.SEPA">
+    <Reference Include="Abacus.SEPA, Version=1.8.2030.21507, Culture=neutral, PublicKeyToken=116ef096325dc46d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>DLLs\Abacus.SEPA.dll</HintPath>
     </Reference>
-    <Reference Include="AbacusBase">
+    <Reference Include="AbacusBase, Version=1.8.2030.21503, Culture=neutral, PublicKeyToken=20ed184975f2edee, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>DLLs\AbacusBase.dll</HintPath>
     </Reference>
     <Reference Include="Ionic.Zip">
@@ -104,7 +109,9 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="log4net.config" />
+    <None Include="log4net.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

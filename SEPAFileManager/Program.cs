@@ -1,4 +1,5 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -8,7 +9,7 @@ namespace SEPAFileManager
 {
     static class Program
     {
-        internal static readonly log4net.ILog Logger = log4net.LogManager.GetLogger("SEPAFileManager");
+        internal static readonly ILog Logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// The main entry point for the application.

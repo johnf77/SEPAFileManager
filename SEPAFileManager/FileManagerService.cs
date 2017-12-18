@@ -1,4 +1,5 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Net;
 using System.Timers;
 
@@ -6,7 +7,7 @@ namespace SEPAFileManager
 {
     public class FileManagerService
     {
-        internal static readonly log4net.ILog Logger = log4net.LogManager.GetLogger("SEPAFileManager");
+        internal static readonly ILog Logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private Timer timerCreateFile = new Timer();
         private Timer timerCreateDDFile = new Timer();
         private Timer timerUpload = new Timer();
@@ -34,7 +35,7 @@ namespace SEPAFileManager
             //if (PatchNo > 0)
             AppVersionNumber = String.Concat(AppVersionNumber, "-", "");
 
-            Logger.Info(string.Concat("Service Version  - Ack & CT Checks", AppVersionNumber));
+            Logger.Info(string.Concat("Service Version  - 2032, DDs, fixed logging", AppVersionNumber));
 
             timerCreateFile.Elapsed += new ElapsedEventHandler(timerCreateFile_Elapsed);
             timerCreateDDFile.Elapsed += new ElapsedEventHandler(timerCreateDDFile_Elapsed);
@@ -94,7 +95,7 @@ namespace SEPAFileManager
             }
             catch (Exception ex)
             {
-                Logger.Debug(String.Concat(DateTime.Now, ", SetTimer", ex.Message));
+                Logger.Error(String.Concat(DateTime.Now, ", SetTimer", ex.Message));
             }
         }
 
@@ -145,7 +146,7 @@ namespace SEPAFileManager
             }
             catch (Exception ex)
             {
-                Logger.Debug(string.Concat(DateTime.Now, ", VF Checker Failed, ", ex.Message));
+                Logger.Error(string.Concat(DateTime.Now, ", VF Checker Failed, ", ex.Message));
             }
             finally
             {
@@ -163,7 +164,7 @@ namespace SEPAFileManager
             }
             catch (Exception ex)
             {
-                Logger.Debug(string.Concat(DateTime.Now, ", CT Unsent Checker Failed, ", ex.Message));
+                Logger.Error(string.Concat(DateTime.Now, ", CT Unsent Checker Failed, ", ex.Message));
             }
             finally
             {
@@ -185,7 +186,7 @@ namespace SEPAFileManager
             }
             catch (Exception ex)
             {
-                Logger.Debug(string.Concat(DateTime.Now, ", ACK Checker Failed, ", ex.Message));
+                Logger.Error(string.Concat(DateTime.Now, ", ACK Checker Failed, ", ex.Message));
             }
             finally
             {
