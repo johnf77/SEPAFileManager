@@ -113,8 +113,17 @@ namespace SEPAFileManager
                         continue;
                     _sftp.Get(string.Concat("/INBOX/", file), DownloadFolder); //gets files from SFTP server
 
-                    ((Tamir.SharpSsh.jsch.ChannelSftp)sftpChannel).rename(string.Concat("/INBOX/", file),//Archive on server
+                    try
+                    {
+                        ((Tamir.SharpSsh.jsch.ChannelSftp)sftpChannel).rename(string.Concat("/INBOX/", file),//Archive on server
                         string.Concat("/INBOX/Archive/", file, ".old"));
+                    }
+                    catch
+                    {
+                        ((Tamir.SharpSsh.jsch.ChannelSftp)sftpChannel).rename(string.Concat("/INBOX/", file),
+                            string.Concat("/INBOX/Archive/", file, DateTime.Today.ToString("ddMMyy"), ".old"));
+                    }
+
                     using (ZipFile zip = ZipFile.Read(DownloadFolder + file))
                     {
                         foreach (ZipEntry e in zip)
